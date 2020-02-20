@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: bind
+spec:
+  selector:
+    matchLabels:
+      name: bind
+  serviceName: "bind"
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        name: bind
+    spec:
+      containers:
+      - name: bind
+        image: argonhiisi/dns
+        env:
+        - name: "WEBMIN_ENABLED"
+          value: "false"
+        ports:
+        - containerPort: 53
+          protocol: UDP
+        volumeMounts:
+        - mountPath: /data
+          name: data
+  volumeClaimTemplates:
+  - metadata:
+      name: data
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: 8Gi
+
